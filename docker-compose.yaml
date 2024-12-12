@@ -1,0 +1,178 @@
+networks:
+  internal:
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:${KEYCLOAK_VERSION:-latest}
+    container_name: keycloak
+    environment:
+      KC_LOG_LEVEL: debug
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://db/${POSTGRES_DATABASE:-keycloak}
+      KC_DB_USERNAME: ${POSTGRES_USER:-keycloak}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD:-keycloakpass}
+      KC_DB_SCHEMA: public
+      KC_HOSTNAME: ${KEYCLOAK_HOSTNAME:-localhost}
+      KC_HTTP_ENABLED: true
+      HTTP_ADDRESS_FORWARDING: true
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-eX4mP13p455w0Rd}
+      # KC_PROXY_HEADERS: xforwarded
+      # PROXY_ADDRESS_FORWARDING: true
+      KC_HEALTH_ENABLED: true
+      KC_METRICS_ENABLED: true
+      KC_REALM_NAME: akosrealm
+      KC_HTTPS_PORT: 8443
+      KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/certs/keycloak.crt
+      KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/certs/keycloak.key
+    entrypoint: ["/opt/keycloak/keycloak-entrypoint.sh"]
+    ports:
+      - '8080:8080'
+      - '8443:8443'
+    depends_on:
+      - db
+    healthcheck:
+      test: ["CMD", "sh", "-c", "exec 3<>/dev/tcp/localhost/8080; echo 'HTTP/1.1' >&3; head -1 <&3"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - ./keycloak-entrypoint.sh:/opt/keycloak/keycloak-entrypoint.sh
+      - ./realms/opensearch-realm.json:/opt/keycloak/data/import/realm.json
+      - ./certs:/opt/keycloak/certs:ro
+    networks:
+      - internal
+
+  db:
+    image: postgres:${POSTGRES_VERSION:-latest}
+    container_name: keycloak-postgres
+    # volumes:
+    #   - ./data/postgres16:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${POSTGRES_DATABASE:-keycloak}
+      POSTGRES_USER: ${POSTGRES_USER:-keycloak}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-keycloakdbpass}
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "${POSTGRES_DATABASE}", "-U", "${POSTGRES_USER}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    networks:
+      - internal
+
+  opensearch-node1:
+    image: opensearchproject/opensearch:${OPENSEARCH_VERSION:-latest}
+    container_name: opensearch-node1
+    hostname: opensearch-node1.${BASE_DOMAIN}
+    environment:
+      - cluster.name=opensearch-cluster
+      - node.name=node1
+      - discovery.seed_hosts=opensearch-node1,opensearch-node2,opensearch-node3
+      - cluster.initial_master_nodes=node1,node2,node3
+      - bootstrap.memory_lock=true
+      - network.host=0.0.0.0
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=26Gwney553cKSB6W4VKmZHR5
+      - plugins.security.ssl.http.pemcert_filepath=/usr/share/opensearch/config/certs/node1.crt
+      - plugins.security.ssl.http.pemkey_filepath=/usr/share/opensearch/config/certs/node1.key
+      - plugins.security.ssl.http.pemtrustedcas_filepath=/usr/share/opensearch/config/certs/root-ca.crt
+    volumes:
+      # - opensearch-data1:/usr/share/opensearch/data
+      - ./certs:/usr/share/opensearch/config/certs:ro
+      - ./config/opensearch.yml:/usr/share/opensearch/config/config.yml:ro
+    ports:
+      - "9200:9200"
+      - "9600:9600"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: 2g
+    networks:
+      - internal
+
+  opensearch-node2:
+    image: opensearchproject/opensearch:${OPENSEARCH_VERSION:-latest}
+    container_name: opensearch-node2
+    hostname: opensearch-node2.${BASE_DOMAIN}
+    environment:
+      - cluster.name=opensearch-cluster
+      - node.name=node2
+      - discovery.seed_hosts=opensearch-node1,opensearch-node2,opensearch-node3
+      - cluster.initial_master_nodes=node1,node2,node3
+      - bootstrap.memory_lock=true
+      - network.host=0.0.0.0
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=26Gwney553cKSB6W4VKmZHR5
+      - plugins.security.ssl.http.pemcert_filepath=/usr/share/opensearch/config/certs/node2.crt
+      - plugins.security.ssl.http.pemkey_filepath=/usr/share/opensearch/config/certs/node2.key
+      - plugins.security.ssl.http.pemtrustedcas_filepath=/usr/share/opensearch/config/certs/root-ca.crt
+    volumes:
+      # - opensearch-data2:/usr/share/opensearch/data
+      - ./certs:/usr/share/opensearch/config/certs:ro
+      - ./config/opensearch.yml:/usr/share/opensearch/config/config.yml:ro
+    ports:
+      - "9202:9200"
+      - "9602:9600"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: 2g
+    networks:
+      - internal
+
+  opensearch-node3:
+    image: opensearchproject/opensearch:${OPENSEARCH_VERSION:-latest}
+    container_name: opensearch-node3
+    hostname: opensearch-node3.${BASE_DOMAIN}
+    environment:
+      - cluster.name=opensearch-cluster
+      - node.name=node3
+      - discovery.seed_hosts=opensearch-node1,opensearch-node2,opensearch-node3
+      - cluster.initial_master_nodes=node1,node2,node3
+      - bootstrap.memory_lock=true
+      - network.host=0.0.0.0
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=26Gwney553cKSB6W4VKmZHR5
+      - plugins.security.ssl.http.pemcert_filepath=/usr/share/opensearch/config/certs/node3.crt
+      - plugins.security.ssl.http.pemkey_filepath=/usr/share/opensearch/config/certs/node3.key
+      - plugins.security.ssl.http.pemtrustedcas_filepath=/usr/share/opensearch/config/certs/root-ca.crt
+    volumes:
+      # - opensearch-data3:/usr/share/opensearch/data
+      - ./certs:/usr/share/opensearch/config/certs:ro
+      - ./config/opensearch.yml:/usr/share/opensearch/config/config.yml:ro
+    ports:
+      - "9203:9200"
+      - "9603:9600"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: 2g
+    networks:
+      - internal
+
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards:${OPENSEARCH_VERSION:-latest}
+    container_name: opensearch-dashboards
+    hostname: opensearch
+    depends_on:
+      keycloak:
+        condition: service_healthy
+      opensearch-node1:
+        condition: service_started
+      opensearch-node2:
+        condition: service_started
+      opensearch-node3:
+        condition: service_started
+    ports:
+      - 5601:5601
+    volumes:
+      - ./config/opensearch_dashboards.yaml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml
+      - ./certs:/usr/share/opensearch-dashboards/config/certs:ro
+    networks:
+      - internal
+
+volumes:
+  opensearch-data1:
+  opensearch-data2:
+  opensearch-data3:

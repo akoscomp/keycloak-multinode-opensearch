@@ -1,0 +1,30 @@
+server.name: kibana
+server.host: "0.0.0.0"
+server.customResponseHeaders : { "Access-Control-Allow-Credentials" : "true" }
+
+server.ssl.enabled: true
+server.ssl.key: /usr/share/opensearch-dashboards/config/certs/opensearch.key
+server.ssl.certificate: /usr/share/opensearch-dashboards/config/certs/opensearch.crt
+
+opensearch.hosts: '["https://opensearch-node1.opensearch.local:9200", "https://opensearch-node2.opensearch.local:9200", "https://opensearch-node3.opensearch.local:9200"]'
+opensearch.ssl.verificationMode: none
+opensearch.username: admin
+opensearch.password: 26Gwney553cKSB6W4VKmZHR5
+opensearch.requestHeadersWhitelist: ["securitytenant","Authorization"]
+
+opensearch_security.multitenancy.enabled: true
+opensearch_security.multitenancy.tenants.preferred: ["Private", "Global"]
+opensearch_security.readonly_mode.roles: ["tom_role"]
+
+#OpenID authentication - keycloak
+opensearch_security.auth.type: "openid"
+opensearch_security.openid.client_id: "opensearch"
+opensearch_security.openid.client_secret: "12345678901234567890123456789012"
+opensearch_security.openid.base_redirect_url: "https://opensearch.opensearch.local:5601"
+opensearch_security.openid.scope: "openid profile email"
+opensearch_security.openid.connect_url: "https://keycloak.opensearch.local:8443/realms/opensearch/.well-known/openid-configuration"
+opensearch_security.openid.root_ca: "/usr/share/opensearch-dashboards/config/certs/root-ca.crt"
+opensearch_security.openid.header: "Authorization"
+
+logging.verbose: true
+logging.root.level: debug

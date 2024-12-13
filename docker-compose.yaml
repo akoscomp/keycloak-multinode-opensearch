@@ -73,13 +73,11 @@ services:
       - bootstrap.memory_lock=true
       - network.host=0.0.0.0
       - OPENSEARCH_INITIAL_ADMIN_PASSWORD=26Gwney553cKSB6W4VKmZHR5
-      - plugins.security.ssl.http.pemcert_filepath=/usr/share/opensearch/config/certs/node1.crt
-      - plugins.security.ssl.http.pemkey_filepath=/usr/share/opensearch/config/certs/node1.key
-      - plugins.security.ssl.http.pemtrustedcas_filepath=/usr/share/opensearch/config/certs/root-ca.crt
     volumes:
       # - opensearch-data1:/usr/share/opensearch/data
       - ./certs:/usr/share/opensearch/config/certs:ro
-      - ./config/opensearch.yml:/usr/share/opensearch/config/config.yml:ro
+      - ./config/opensearch-ssl.yml:/usr/share/opensearch/config/opensearch.yml:ro
+      - ./config/opensearch-auth.yml:/usr/share/opensearch/config/opensearch-security/config.yml:ro
     ports:
       - "9200:9200"
       - "9600:9600"
@@ -103,13 +101,14 @@ services:
       - bootstrap.memory_lock=true
       - network.host=0.0.0.0
       - OPENSEARCH_INITIAL_ADMIN_PASSWORD=26Gwney553cKSB6W4VKmZHR5
-      - plugins.security.ssl.http.pemcert_filepath=/usr/share/opensearch/config/certs/node2.crt
-      - plugins.security.ssl.http.pemkey_filepath=/usr/share/opensearch/config/certs/node2.key
+      - plugins.security.ssl.http.pemcert_filepath=/usr/share/opensearch/config/certs/node.crt
+      - plugins.security.ssl.http.pemkey_filepath=/usr/share/opensearch/config/certs/node.key
       - plugins.security.ssl.http.pemtrustedcas_filepath=/usr/share/opensearch/config/certs/root-ca.crt
     volumes:
       # - opensearch-data2:/usr/share/opensearch/data
       - ./certs:/usr/share/opensearch/config/certs:ro
-      - ./config/opensearch.yml:/usr/share/opensearch/config/config.yml:ro
+      - ./config/opensearch-ssl.yml:/usr/share/opensearch/config/opensearch.yml:ro
+      - ./config/opensearch-auth.yml:/usr/share/opensearch/config/opensearch-security/config.yml:ro
     ports:
       - "9202:9200"
       - "9602:9600"
@@ -133,13 +132,14 @@ services:
       - bootstrap.memory_lock=true
       - network.host=0.0.0.0
       - OPENSEARCH_INITIAL_ADMIN_PASSWORD=26Gwney553cKSB6W4VKmZHR5
-      - plugins.security.ssl.http.pemcert_filepath=/usr/share/opensearch/config/certs/node3.crt
-      - plugins.security.ssl.http.pemkey_filepath=/usr/share/opensearch/config/certs/node3.key
+      - plugins.security.ssl.http.pemcert_filepath=/usr/share/opensearch/config/certs/node.crt
+      - plugins.security.ssl.http.pemkey_filepath=/usr/share/opensearch/config/certs/node.key
       - plugins.security.ssl.http.pemtrustedcas_filepath=/usr/share/opensearch/config/certs/root-ca.crt
     volumes:
       # - opensearch-data3:/usr/share/opensearch/data
       - ./certs:/usr/share/opensearch/config/certs:ro
-      - ./config/opensearch.yml:/usr/share/opensearch/config/config.yml:ro
+      - ./config/opensearch-ssl.yml:/usr/share/opensearch/config/opensearch.yml:ro
+      - ./config/opensearch-auth.yml:/usr/share/opensearch/config/opensearch-security/config.yml:ro
     ports:
       - "9203:9200"
       - "9603:9600"

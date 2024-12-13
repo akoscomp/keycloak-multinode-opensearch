@@ -1,0 +1,29 @@
+plugins.security.ssl.transport.enabled: true
+plugins.security.ssl.transport.pemcert_filepath: /usr/share/opensearch/config/certs/node.crt
+plugins.security.ssl.transport.pemkey_filepath: /usr/share/opensearch/config/certs/node.key
+plugins.security.ssl.transport.pemtrustedcas_filepath: /usr/share/opensearch/config/certs/root-ca.crt
+# plugins.security.ssl.transport.enforce_hostname_verification: false
+
+plugins.security.ssl.http.enabled: true
+plugins.security.ssl.http.pemcert_filepath: /usr/share/opensearch/config/certs/node.crt
+plugins.security.ssl.http.pemkey_filepath: /usr/share/opensearch/config/certs/node.key
+plugins.security.ssl.http.pemtrustedcas_filepath: /usr/share/opensearch/config/certs/root-ca.crt
+plugins.security.authcz.admin_dn:
+  - "CN=admin.opensearch.local,O=TestLab,ST=VIE,C=AT"
+plugins.security.nodes_dn:
+  - "CN=node"
+  - "CN=node1"
+  - "CN=node2"
+  - "CN=node3"
+  - "CN=node.opensearch.local,O=TestLab,ST=VIE,C=AT"
+  - "CN=node1.opensearch.local,O=TestLab,ST=VIE,C=AT"
+  - "CN=node2.opensearch.local,O=TestLab,ST=VIE,C=AT"
+  - "CN=node3.opensearch.local,O=TestLab,ST=VIE,C=AT"
+
+plugins.security.allow_default_init_securityindex: true
+plugins.security.audit.type: internal_opensearch
+plugins.security.enable_snapshot_restore_privilege: true
+plugins.security.check_snapshot_restore_write_privileges: true
+plugins.security.restapi.roles_enabled: ["all_access", "security_rest_api_access"]
+
+logger.org.opensearch.security: DEBUG

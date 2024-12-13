@@ -9,7 +9,8 @@ server.ssl.certificate: /usr/share/opensearch-dashboards/config/certs/opensearch
 opensearch.hosts: '["https://opensearch-node1.opensearch.local:9200", "https://opensearch-node2.opensearch.local:9200", "https://opensearch-node3.opensearch.local:9200"]'
 opensearch.ssl.verificationMode: none
 opensearch.username: admin
-opensearch.password: 26Gwney553cKSB6W4VKmZHR5
+opensearch.password: admin
+# opensearch.password: 26Gwney553cKSB6W4VKmZHR5
 opensearch.requestHeadersWhitelist: ["securitytenant","Authorization"]
 
 opensearch_security.multitenancy.enabled: true

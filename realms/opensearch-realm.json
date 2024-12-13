@@ -486,7 +486,7 @@
       "alwaysDisplayInConsole" : false,
       "clientAuthenticatorType" : "client-secret",
       "secret" : "12345678901234567890123456789012",
-      "redirectUris" : [ "https://opensearch.opensearch.local:5601/*", "https://opensearch.opensearch.local:9200/*", "*" ],
+      "redirectUris" : [ "https://opensearch.opensearch.local:5601/*", "https://opensearch.opensearch.local:9200/*" ],
       "webOrigins" : [ "*" ],
       "notBefore" : 0,
       "bearerOnly" : false,

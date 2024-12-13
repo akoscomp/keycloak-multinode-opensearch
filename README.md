@@ -1,4 +1,4 @@
-# Keycloak with Opensearch multinode integration with SSL enabled
+# Keycloak, Opensearch multinode integration with SSL enabled
 
 ## Requirements
 * add line in `/etc/hosts`: `127.0.0.1 keycloak.opensearch.local opensearch.opensearch.local node1.opensearch.local`
